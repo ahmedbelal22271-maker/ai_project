@@ -1,3 +1,5 @@
+import copy
+from collections import deque
 from constants import GRID_SIZE
 
 class GameState:
@@ -37,3 +39,36 @@ class GameEngine:
                 else: 
                     valid.extend([c for c in opp_adj if c not in (pos, jump_behind)])
         return valid
+
+    def is_valid_wall(self, col, row, orient, state=None):
+        if state is None: state = self.state
+        if col < 0 or col >= GRID_SIZE-1 or row < 0 or row >= GRID_SIZE-1: return False
+        
+        if orient == 'H':
+            if state.h_walls[col][row] or state.h_walls[col+1][row]: return False
+            if state.v_walls[col][row]: return False
+        else:
+            if state.v_walls[col][row] or state.v_walls[col][row+1]: return False
+            if state.h_walls[col][row]: return False
+
+        test_state = copy.deepcopy(state)
+        if orient == 'H':
+            test_state.h_walls[col][row] = test_state.h_walls[col+1][row] = True
+        else:
+            test_state.v_walls[col][row] = test_state.v_walls[col][row+1] = True
+            
+        p1_path = self.bfs_shortest_path(test_state.p1_pos, 0, test_state)
+        p2_path = self.bfs_shortest_path(test_state.p2_pos, GRID_SIZE-1, test_state)
+        return p1_path is not None and p2_path is not None
+
+    def bfs_shortest_path(self, start, target_row, state):
+        queue = deque([(start, [])])
+        visited = {start}
+        while queue:
+            (c, r), path = queue.popleft()
+            if r == target_row: return path
+            for adj in self.get_adjacent(c, r, state):
+                if adj not in visited:
+                    visited.add(adj)
+                    queue.append((adj, path + [adj]))
+        return None

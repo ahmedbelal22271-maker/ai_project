@@ -10,13 +10,14 @@ class AIPlayer:
     def get_move(self):
         if self.difficulty == 1:
             return self._ai_easy()
-            
-        valid_moves = self.engine.get_valid_pawn_moves(2)
-        if valid_moves:
-            return ('MOVE', random.choice(valid_moves))
+        elif self.difficulty == 2:
+            return self._ai_medium()
+        elif self.difficulty == 3:
+            return self._ai_hard()
         return None
 
     def _ai_easy(self):
+        
         if self.engine.state.p2_walls > 0 and random.random() < 0.20:
             attempts = 0
             while attempts < 20:

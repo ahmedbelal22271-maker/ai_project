@@ -1,4 +1,5 @@
 import random
+import copy
 from constants import GRID_SIZE
 
 class AIPlayer:
@@ -65,4 +66,23 @@ class AIPlayer:
                     max_eval = eval_score
                     best_move = ('MOVE', move)
 
+        if self.engine.state.p2_walls > 0:
+            current_p1_path = self.engine.bfs_shortest_path(self.engine.state.p1_pos, 0, self.engine.state)
+            if current_p1_path is not None:
+                for c, r in current_p1_path[:4]:
+                    for orient in ['H', 'V']:
+                        for dx, dy in [(0, 0), (-1, 0), (0, -1), (1, 0), (0, 1)]:
+                            if self.engine.is_valid_wall(c + dx, r + dy, orient):
+                                test_state = copy.deepcopy(self.engine.state)
+                                if orient == 'H': test_state.h_walls[c+dx][r+dy] = test_state.h_walls[c+dx+1][r+dy] = True
+                                else: test_state.v_walls[c+dx][r+dy] = test_state.v_walls[c+dx][r+dy+1] = True
+                                p1_new_path = self.engine.bfs_shortest_path(test_state.p1_pos, 0, test_state)
+                                p2_new_path = self.engine.bfs_shortest_path(test_state.p2_pos, GRID_SIZE-1, test_state)
+                                if p1_new_path is not None and p2_new_path is not None:
+                                    eval_score = (len(p1_new_path) - len(p2_new_path)) - 0.1
+                                    if eval_score > max_eval:
+                                        max_eval = eval_score
+                                        best_move = ('WALL', (c+dx, r+dy, orient))           
+
         return best_move if best_move else ('MOVE', random.choice(valid_moves))
+    

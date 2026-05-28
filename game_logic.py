@@ -13,6 +13,35 @@ class GameState:
 class GameEngine:
     def __init__(self):
         self.state = GameState()
+        self.history = []
+        self.redo_stack = []
+        self.save_state()
+
+    def save_state(self):
+        self.history.append(copy.deepcopy(self.state))
+        
+    def undo(self):
+        if len(self.history) > 1:
+            self.redo_stack.append(self.history.pop())
+            self.state = copy.deepcopy(self.history[-1])
+            return True
+        return False
+            
+    def redo(self):
+        if self.redo_stack:
+            s = self.redo_stack.pop()
+            self.history.append(s)
+            self.state = copy.deepcopy(s)
+            return True
+        return False
+
+    def reset(self):
+        self.__init__()
+
+    def check_win(self):
+        if self.state.p1_pos[1] == 0: self.state.winner = 1
+        elif self.state.p2_pos[1] == GRID_SIZE - 1: self.state.winner = 2
+        return self.state.winner
 
     def get_adjacent(self, col, row, state=None):
         if state is None: state = self.state

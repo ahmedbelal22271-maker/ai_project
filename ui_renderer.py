@@ -22,10 +22,9 @@ class Renderer:
         pygame.draw.circle(self.screen, (255, 255, 255), (px, py), r, 2)
         pygame.draw.circle(self.screen, (max(0, color[0]-40), max(0, color[1]-40), max(0, color[2]-40)), (px, py), r - 4)
 
-
-    def render_game(self, engine, ai_mode, msg):
+    def render_game(self, engine, ai_mode, msg, hover_wall, ui_rects):
         self.screen.fill(BG_COLOR)
-
+        
         self.draw_button("Reset", ui_rects['reset'])
         self.draw_button(["Vs Human", "AI: Easy", "AI: Med", "AI: Hard"][ai_mode], ui_rects['ai'])
         self.draw_button("Undo", ui_rects['undo'])
@@ -39,7 +38,7 @@ class Renderer:
 
         pad = 12
         pygame.draw.rect(self.screen, BOARD_BG_COLOR, pygame.Rect(MARGIN-pad, TOP_MARGIN-pad, (GRID_SIZE*CELL_SIZE)+(pad*2), (GRID_SIZE*CELL_SIZE)+(pad*2)), border_radius=10)
-        
+
         valid_moves = []
         if not engine.state.winner and (ai_mode == 0 or engine.state.turn == 1): 
             valid_moves = engine.get_valid_pawn_moves(engine.state.turn)
@@ -48,7 +47,7 @@ class Renderer:
             for c in range(GRID_SIZE):
                 x, y = MARGIN + c*CELL_SIZE, TOP_MARGIN + r*CELL_SIZE
                 pygame.draw.rect(self.screen, CELL_COLOR, pygame.Rect(x+2, y+2, CELL_SIZE-4, CELL_SIZE-4), border_radius=5)
-
+                
                 if (c, r) in valid_moves:
                     vs = pygame.Surface((CELL_SIZE-4, CELL_SIZE-4), pygame.SRCALPHA)
                     pygame.draw.rect(vs, VALID_MOVE_COLOR, vs.get_rect(), border_radius=5)
@@ -58,7 +57,7 @@ class Renderer:
                     pygame.draw.rect(self.screen, WALL_COLOR, pygame.Rect(MARGIN+(c+1)*CELL_SIZE - WALL_THICKNESS//2, y, WALL_THICKNESS, CELL_SIZE), border_radius=4)
                 if r < GRID_SIZE - 1 and c < GRID_SIZE and engine.state.h_walls[c][r]: 
                     pygame.draw.rect(self.screen, WALL_COLOR, pygame.Rect(x, TOP_MARGIN+(r+1)*CELL_SIZE - WALL_THICKNESS//2, CELL_SIZE, WALL_THICKNESS), border_radius=4)
-    
+
         if hover_wall and not engine.state.winner:
             hc, hr, horient, hvalid = hover_wall
             w, h = (CELL_SIZE*2, WALL_THICKNESS) if horient == 'H' else (WALL_THICKNESS, CELL_SIZE*2)
@@ -67,5 +66,5 @@ class Renderer:
             self.screen.blit(hs, (MARGIN + hc*CELL_SIZE, TOP_MARGIN + (hr+1)*CELL_SIZE - WALL_THICKNESS//2) if horient == 'H' else (MARGIN + (hc+1)*CELL_SIZE - WALL_THICKNESS//2, TOP_MARGIN + hr*CELL_SIZE))
 
         self.draw_pawn(engine.state.p1_pos, P1_COLOR)
-        self.draw_pawn(engine.state.p2_pos, P2_COLOR)        
+        self.draw_pawn(engine.state.p2_pos, P2_COLOR)
         pygame.display.flip()

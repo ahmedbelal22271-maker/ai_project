@@ -32,3 +32,37 @@ class AIPlayer:
             if p2_path[0] in valid_moves: 
                 return ('MOVE', p2_path[0])
         return ('MOVE', random.choice(valid_moves))
+    
+    def _ai_medium(self):
+        p1_path = self.engine.bfs_shortest_path(self.engine.state.p1_pos, 0, self.engine.state)
+        p2_path = self.engine.bfs_shortest_path(self.engine.state.p2_pos, GRID_SIZE-1, self.engine.state)
+        
+        if self.engine.state.p2_walls > 0 and p1_path is not None and p2_path is not None:
+            if len(p1_path) <= len(p2_path):
+                for c, r in p1_path[:3]:
+                    for tw_c, tw_r, orient in [(c, r, 'H'), (c-1, r, 'H'), (c, r, 'V'), (c, r-1, 'V')]:
+                        if self.engine.is_valid_wall(tw_c, tw_r, orient):
+                            return ('WALL', (tw_c, tw_r, orient))
+        
+        valid_moves = self.engine.get_valid_pawn_moves(2)
+        if p2_path is not None and len(p2_path) > 0 and p2_path[0] in valid_moves: return ('MOVE', p2_path[0])
+        return ('MOVE', valid_moves[0])
+    
+    def _ai_hard(self):
+        best_move = None
+        max_eval = -999
+        valid_moves = self.engine.get_valid_pawn_moves(2)
+        
+        for move in valid_moves:
+            test_state = copy.deepcopy(self.engine.state)
+            test_state.p2_pos = move
+            p1_path = self.engine.bfs_shortest_path(test_state.p1_pos, 0, test_state)
+            p2_path = self.engine.bfs_shortest_path(test_state.p2_pos, GRID_SIZE-1, test_state)
+            
+            if p1_path is not None and p2_path is not None:
+                eval_score = len(p1_path) - len(p2_path)
+                if eval_score > max_eval:
+                    max_eval = eval_score
+                    best_move = ('MOVE', move)
+
+        return best_move if best_move else ('MOVE', random.choice(valid_moves))

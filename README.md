@@ -4,7 +4,7 @@
 | # | Name | ID |
 |---|---|---|
 | 1 | *Ahmed Belal Taher* |*2300216*|
-| 2 | *Saifallah Basem Ahmed * |*2300142*|
+| 2 | *Saifallah Basem Ahmed* |*2300142*|
 | 3 | *Ahmed Mostafa Elsayed* |*2300192*|
 | 4 | *Mahmoud Mohamed Mokhtar* |*2300824*|
 | 5 | *Ahmed Mamoun Mahmoud Mamoun* |*2300035*|
@@ -30,18 +30,18 @@
 ## Screenshots
 
 ### Game in Progress
-![alt text](image-1.png)
+![Game in Progress](screenshot1.png)
 
 ### Player 1 Wins
-![alt text](image.png)
+![Player 1 Wins](screenshot2.png)
 
 ---
 
 ##  Demo Video
 
- **[Watch the Demo Video here](  )**
+ **[Watch the Demo Video here](https://drive.google.com/drive/folders/19r0eyEAo8zmkS3J_UYK8Vq3ZW9Ieqi1q?usp=sharing)**
 
-> The video demonstrates game setup, Human vs Human gameplay, and Human vs Computer gameplay across all three AI difficulty levels.
+> The video demonstrates game setup, Human vs Human gameplay, and Human vs Computer gameplay across Two AI difficulty levels, and the bonus part.
 
 ---
 
